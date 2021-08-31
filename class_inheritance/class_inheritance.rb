@@ -1,3 +1,4 @@
+require "byebug"
 class Employee
     attr_reader :boss, :salary
 
@@ -6,6 +7,9 @@ class Employee
         @title = title
         @salary = salary
         @boss = boss
+        if !@boss.nil?
+            @boss.juniors << self
+        end
     end
 
     def bonus(multiplier)
@@ -18,7 +22,7 @@ end
 
 
 class Manager < Employee
-    attr_reader :juniors
+    attr_accessor :juniors
 
     def initialize(name, title, salary, boss = nil, *employees)
         super(name, title, salary, boss)
@@ -26,32 +30,21 @@ class Manager < Employee
     end
 
     def bonus(multiplier)
-        sum = @juniors.inject {|a, b| a.salary + b.salary}
-        sum * multiplier
-    end
-
-    def add_juniors(*employees)
-        employees.each do |el|
-            if el.is_a?(Manager) && el.boss == self
-                el.juniors.each {|employee| @juniors << employee}
-            elsif el.boss == self
-                @juniors << el
+        sum = 0
+        @juniors.each do |ele|
+            sum += ele.salary
+            if ele.is_a?(Manager)
+                sum += ele.bonus(1)
             end
         end
+        sum * multiplier
     end
-
-    
 end
 
 ned =  Manager.new('Ned', 'Founder', 1000000)
 darren = Manager.new('Darren', 'TA Manager', 78000, ned)
 shawna = Employee.new('Shawna', 'TA', 12000, darren)
 david = Employee.new('David', 'TA', 10000, darren)
-
-darren.add_juniors(shawna, david)
-
-
-ned.add_juniors(darren)
 
 p ned.bonus(5)
 p darren.bonus(4)
