@@ -6,10 +6,22 @@ class Board
         arr = Array.new(8) {Array.new(8)}
 
         arr.each.with_index do |row, i|
-            if i == 0 || i == 1 || i == 6 || i == 7
-                row.map! {|ele| Piece.new}
-            else
-                row.map! {|ele| nil}
+            b = Board.new
+            if i == 1
+                idx = 0
+                row = row.each do |ele| 
+                    Pawn.new("black", Board.new, [i, idx], :P)
+                    idx += 1
+                end
+            elsif i == 6
+                idx = 0
+                row = row.each do |ele| 
+                    Pawn.new("white", Board.new, [i, idx], :P)
+                    idx += 1
+                end
+            elsif i == 0
+                row[0] = Rook.new("black", )
+                row.map! {|ele| NullPiece.new}
             end
         end
     end
